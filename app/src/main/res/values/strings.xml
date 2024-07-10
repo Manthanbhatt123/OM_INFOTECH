@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">OmInfo-Manthan</string>
+    <string name="_1">1</string>
+    <string name="name">Name</string>
+    <string name="order_id">order id:</string>
+    <string name="order_no">order no:</string>
+    <string name="order_customer_address">Customer Address:</string>
+    <string name="order_delivery_cost">delivery cost:</string>
+    <string name="deliver_item">Deliver Item</string>
+</resources>

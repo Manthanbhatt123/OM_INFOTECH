@@ -1,0 +1,69 @@
+package com.example.myapplication.adapter;
+
+import android.content.Context;
+import android.text.method.CharacterPickerDialog;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.myapplication.databinding.ItemrowOrderDataListBinding;
+import com.example.myapplication.db.OrderData;
+import com.example.myapplication.views.OrderItemClickListner;
+
+import java.util.List;
+
+public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.ViewHolder> {
+
+    private final List<OrderData> orders;
+    private final LayoutInflater inflater;
+    private final OrderItemClickListner orderItemClickListner;
+
+    public OrderListAdapter(Context context, List<OrderData> orders, OrderItemClickListner orderItemClickListner) {
+        this.orders = orders;
+        this.orderItemClickListner = orderItemClickListner;
+        inflater = LayoutInflater.from(context);
+    }
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private final ItemrowOrderDataListBinding binding;
+
+        public ViewHolder(ItemrowOrderDataListBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+    }
+
+    @NonNull
+    @Override
+    public OrderListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ItemrowOrderDataListBinding binding = ItemrowOrderDataListBinding.inflate(inflater, parent, false);
+        return new ViewHolder(binding);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull OrderListAdapter.ViewHolder holder, int position) {
+        if (orders != null) {
+            final OrderData orderData = orders.get(position);
+            holder.binding.tvOrderCustomerName.setText(orderData.getCustomer_name());
+            holder.binding.tvOrderId.setText(orderData.getOrder_id());
+            holder.binding.tvOrderNo.setText(orderData.getOrder_no());
+            holder.binding.tvOrderCustomerAddress.setText(orderData.getAddress());
+            holder.binding.tvOrderDeliveryCost.setText(orderData.getDelivery_cost());
+            holder.binding.btnDeliverItem.setOnClickListener(
+                    v ->orderItemClickListner.onOrderItemClick(orderData)
+            );
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        if (orders != null) {
+            return orders.size();
+        } else {
+            return 0;
+        }
+    }
+}
