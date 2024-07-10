@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.Manifest;
 import android.widget.Toast;
@@ -15,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.myapplication.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.example.myapplication.adapter.OrderListAdapter;
@@ -25,7 +25,6 @@ import com.example.myapplication.viewmodel.OrderListViewModel;
 import com.example.myapplication.viewmodel.OrderViewModelFactory;
 import com.example.myapplication.views.OrderItemClickListner;
 import com.example.myapplication.views.OrderListCallBack;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
@@ -83,11 +82,10 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
     }
 
     private void setupViewModel() {
-        OrderRepo repository = new OrderRepo();
+        OrderRepo repository = new OrderRepo(this);
         OrderViewModelFactory factory = new OrderViewModelFactory(repository);
         orderListViewModel = new ViewModelProvider(this, factory).get(OrderListViewModel.class);
-        orderListViewModel.fetchOrderList(this,this);
-
+        orderListViewModel.fetchOrderList(this);
     }
 
     @Override
@@ -116,14 +114,17 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
 
             float distance = currentLocation.distanceTo(orderLocation);
 
+            Bundle bundle = new Bundle();
+            bundle.putString(getString(R.string.orderId),orderData.getOrder_id());
+            bundle.putString(getString(R.string.orderNo),orderData.getOrder_no());
+            bundle.putString(getString(R.string.orderAddress),orderData.getAddress());
+            bundle.putString(getString(R.string.orderLat),orderData.getLongitude());
+            bundle.putString(getString(R.string.orderLng),orderData.getLatitude());
+            bundle.putString(getString(R.string.orderCustomerName),orderData.getCustomer_name());
+            bundle.putString(getString(R.string.orderDeliveryCost),orderData.getDelivery_cost());
             if (distance < 500000) {
                 Intent intent = new Intent(this, DeliveryActivity.class);
-                intent.putExtra("orderId",orderData.getOrder_id());
-                intent.putExtra("orderName",orderData.getOrder_no());
-                intent.putExtra("orderAddress",orderData.getAddress());
-                intent.putExtra("orderLat",orderData.getLongitude());
-                intent.putExtra("orderLng",orderData.getLatitude());
-                intent.putExtra("orderCustomerName",orderData.getCustomer_name());
+                intent.putExtras(bundle);
                 startActivity(intent);
                Toast.makeText(this, "Location is within 50 meters", Toast.LENGTH_SHORT).show();
             } else {

@@ -15,7 +15,11 @@ public class OrderData {
     private String longitude;
     private String address;
     private String delivery_cost;
-
+    private String collected_cost;
+    private String image_url;
+    private String consignment_status;
+    private String damage_type;
+    private String order_status;
 
     // Getters and Setters
 
@@ -81,6 +85,46 @@ public class OrderData {
 
     public void setDelivery_cost(String delivery_cost) {
         this.delivery_cost = delivery_cost;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
+    }
+
+    public String getOrder_status() {
+        return order_status;
+    }
+
+    public void setOrder_status(String order_status) {
+        this.order_status = order_status;
+    }
+
+    public String getConsignment_status() {
+        return consignment_status;
+    }
+
+    public void setConsignment_status(String consignment_status) {
+        this.consignment_status = consignment_status;
+    }
+
+    public String getDamage_type() {
+        return damage_type;
+    }
+
+    public void setDamage_type(String damage_type) {
+        this.damage_type = damage_type;
+    }
+
+    public String getCollected_cost() {
+        return collected_cost;
+    }
+
+    public void setCollected_cost(String collected_cost) {
+        this.collected_cost = collected_cost;
     }
 }
 

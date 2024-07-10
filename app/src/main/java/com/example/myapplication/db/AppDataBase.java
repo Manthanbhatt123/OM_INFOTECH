@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-@Database(entities = {OrderData.class}, version = 1)
+@Database(entities = {OrderData.class}, version = 5)
 public abstract class AppDataBase extends RoomDatabase {
 
     public static AppDataBase instance;

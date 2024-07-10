@@ -15,8 +15,8 @@ public class OrderListViewModel extends ViewModel {
         this.repository = repo;
     }
 
-    public void fetchOrderList(OrderListCallBack callback, Context context) {
-        repository.getOrderList(callback,context);
+    public void fetchOrderList(OrderListCallBack callback) {
+        repository.getOrderList(callback);
     }
 
 }

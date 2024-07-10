@@ -2,4 +2,5 @@
 <resources>
     <string name="order_id">order id:</string>
     <string name="order_customer_address">Customer Address:</string>
+    <string name="good">Good</string>
 </resources>

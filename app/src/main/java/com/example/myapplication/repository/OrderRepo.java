@@ -17,9 +17,13 @@ import retrofit2.Response;
 
 public class OrderRepo {
     private final NetworkService networkService = RetrofitClient.getRetrofitInstance().create(NetworkService.class);
+    AppDataBase db;
+    public OrderRepo(Context context){
+       db = AppDataBase.getInstance(context);
+    }
 
-    public void getOrderList(OrderListCallBack callBack , Context context) {
-        AppDataBase db = AppDataBase.getInstance(context);
+    public void getOrderList(OrderListCallBack callBack ) {
+
 
         if (db.orderDao().getAllOrders().isEmpty()) {
             networkService.getOrderData().enqueue(new Callback<OrderList>() {
@@ -39,5 +43,9 @@ public class OrderRepo {
         } else {
             callBack.onSuccess(db.orderDao().getAllOrders());
         }
+    }
+
+    public void updateOrderList(String damagetype,String collectedCost,String img_url,String consignment_status,String order_status,String order_id){
+        db.orderDao().updateOrder(damagetype,collectedCost,img_url, consignment_status,order_status,order_id);
     }
 }
