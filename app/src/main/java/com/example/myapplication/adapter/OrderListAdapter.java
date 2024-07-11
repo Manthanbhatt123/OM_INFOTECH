@@ -1,5 +1,8 @@
 package com.example.myapplication.adapter;
 
+import static androidx.core.content.ContextCompat.getColor;
+import static java.security.AccessController.getContext;
+
 import android.content.Context;
 import android.text.method.CharacterPickerDialog;
 import android.view.LayoutInflater;
@@ -7,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.R;
 import com.example.myapplication.databinding.ItemrowOrderDataListBinding;
 import com.example.myapplication.db.OrderData;
 import com.example.myapplication.views.OrderItemClickListner;
@@ -20,8 +25,10 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
     private final List<OrderData> orders;
     private final LayoutInflater inflater;
     private final OrderItemClickListner orderItemClickListner;
+    private final Context contextAdapter;
 
     public OrderListAdapter(Context context, List<OrderData> orders, OrderItemClickListner orderItemClickListner) {
+        contextAdapter = context;
         this.orders = orders;
         this.orderItemClickListner = orderItemClickListner;
         inflater = LayoutInflater.from(context);
@@ -55,6 +62,12 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             holder.binding.btnDeliverItem.setOnClickListener(
                     v ->orderItemClickListner.onOrderItemClick(orderData)
             );
+
+            if(orderData.getOrder_status() != null) {
+                if (orderData.getOrder_status().equals("Delivered")) {
+                    holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.green));
+                }
+            }
         }
     }
 

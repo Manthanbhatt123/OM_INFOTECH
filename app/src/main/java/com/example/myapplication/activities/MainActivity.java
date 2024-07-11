@@ -6,9 +6,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.Manifest;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,6 +28,8 @@ import com.example.myapplication.viewmodel.OrderViewModelFactory;
 import com.example.myapplication.views.OrderItemClickListner;
 import com.example.myapplication.views.OrderListCallBack;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OrderListCallBack, OrderItemClickListner {
@@ -45,9 +49,9 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
     protected void onCreate(Bundle savedInstanceState) {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         initUI();
     }
 
@@ -79,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
         orderListAdapter = new OrderListAdapter(this, orderDataList,this);
         binding.rvOrderList.setLayoutManager(new LinearLayoutManager(this));
         binding.rvOrderList.setAdapter(orderListAdapter);
+
+        orderDataList.sort(Comparator.comparing(OrderData::getCustomer_name));
     }
 
     private void setupViewModel() {
@@ -94,7 +100,24 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
             orderDataList = body;
             setupAdapter();
         }
-        Log.e("OrderData", "onSuccess: "+ body );
+        int deliveryCount = 0;
+        double totalCash = 0;
+        if (orderDataList != null) {
+            for (int i = 0; i < orderDataList.size(); i++) {
+                if (orderDataList.get(i).getOrder_status() != null) {
+                    if (orderDataList.get(i).getOrder_status().equals("Delivered")) {
+                        deliveryCount++;
+                    }
+                }
+                if (orderDataList.get(i).getCollected_cost() != null) {
+                    totalCash += Double.parseDouble(orderDataList.get(i).getCollected_cost());
+                }
+            }
+        }
+        binding.tvOrderDeliveryCount.setText(String.format("%s%d/%d", getString(R.string.delivery_count), deliveryCount, orderDataList.size()));
+        binding.tvOrderCashCollected.setText(String.format("%s%s", getString(R.string.total_cash_collected), totalCash));
+
+        Log.e("OrderData---!@#", "onSuccess: "+ body +"\n"+"deliveryCount:" + deliveryCount);
     }
 
     @Override
@@ -128,6 +151,12 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
                 startActivity(intent);
                Toast.makeText(this, "Location is within 50 meters", Toast.LENGTH_SHORT).show();
             } else {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setTitle("Location Error");
+                dialog.setMessage("Location is too far (" + distance + " meters)");
+                dialog.setPositiveButton("OK", (dialog1, which) -> {dialog1.dismiss();});
+                dialog.show();
+
                 Toast.makeText(this, "Location is too far (" + distance + " meters)", Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -139,5 +168,11 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
                 "Latitude:"+orderData.getLatitude() +
                 "\n" +
                 "Longitude:"+orderData.getLongitude());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        orderListViewModel.fetchOrderList(this);
     }
 }

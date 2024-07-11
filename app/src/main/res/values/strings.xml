@@ -22,4 +22,10 @@
     <string name="damaged">Damaged</string>
     <string name="good">Good</string>
     <string name="_0_00">0.00</string>
+    <string name="delivery_count_4_6">Delivery Count: 4/6</string>
+    <string name="cash_collected_100">Cash Collected: 100</string>
+    <string name="total_cash_collected">"Total Cash Collected: "</string>
+    <string name="delivery_count">"Delivery Count: "</string>
+    <string name="back">Back</string>
+    <string name="delivered">Delivered</string>
 </resources>

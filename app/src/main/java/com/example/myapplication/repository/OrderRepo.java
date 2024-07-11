@@ -24,7 +24,6 @@ public class OrderRepo {
 
     public void getOrderList(OrderListCallBack callBack ) {
 
-
         if (db.orderDao().getAllOrders().isEmpty()) {
             networkService.getOrderData().enqueue(new Callback<OrderList>() {
                 @Override

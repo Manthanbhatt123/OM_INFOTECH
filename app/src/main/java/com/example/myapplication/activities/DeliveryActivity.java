@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -33,13 +36,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
 
 public class DeliveryActivity extends AppCompatActivity {
     ActivityDeliveryBinding binding;
@@ -48,7 +49,6 @@ public class DeliveryActivity extends AppCompatActivity {
     private static final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
     private ImageCapture imageCapture;
     private Preview preview;
-    private ExecutorService cameraExecutor;
     private File photoFile;
     Bitmap bitmap;
     private DeliveryViewModel deliveryViewModel;
@@ -59,15 +59,14 @@ public class DeliveryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         binding = ActivityDeliveryBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
-        consignmentStatus = "Good";
+        consignmentStatus = getString(R.string.good);
         getData();
         setSpinner();
         setupViewModel();
         cameraCapture();
         onButtonClick();
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     private void setSpinner() {
@@ -90,6 +89,8 @@ public class DeliveryActivity extends AppCompatActivity {
 
     private void onButtonClick() {
 
+        binding.btnBack.setOnClickListener(v -> finish());
+
         binding.btnCapture.setOnClickListener(v -> takePhoto());
 
         binding.btnRetake.setOnClickListener(v -> {
@@ -103,10 +104,10 @@ public class DeliveryActivity extends AppCompatActivity {
 
         binding.rgDeliveryStatus.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbGood) {
-                consignmentStatus = "Good";
+                consignmentStatus = getString(R.string.good);
                 binding.spinnerDamagedList.setVisibility(View.GONE);
             } else {
-                consignmentStatus = "Damaged";
+                consignmentStatus = getString(R.string.damaged);
                 binding.spinnerDamagedList.setVisibility(View.VISIBLE);
                 }
             });
@@ -117,10 +118,13 @@ public class DeliveryActivity extends AppCompatActivity {
                 deliveryViewModel.updateOrder(
                         damageType,
                         binding.edtOrderCollectedAmount.getText().toString(),
-                        binding.ivOrderPic.toString(),
+                        bitmap.toString(),
                         consignmentStatus,
-                        "Delivered",
+                        getString(R.string.delivered),
                         orderId);
+                finish();
+            } else {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -130,7 +134,6 @@ public class DeliveryActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 damageType = adapterView.getItemAtPosition(i).toString();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 Toast.makeText(DeliveryActivity.this, "Please select damage type", Toast.LENGTH_SHORT).show();
@@ -146,13 +149,14 @@ public class DeliveryActivity extends AppCompatActivity {
             Toast.makeText(this, "Please take photo", Toast.LENGTH_SHORT).show();
             return false;
         } else if(
-                consignmentStatus.equals("Good") &&
-                !binding.tvDeliveryDeliveryCost.getText().toString().equals(binding.edtOrderCollectedAmount.getText().toString())
+                consignmentStatus.equals(getString(R.string.good)) &&
+                        Double.parseDouble(binding.tvDeliveryDeliveryCost.getText().toString()) !=
+                                Double.parseDouble(binding.edtOrderCollectedAmount.getText().toString())
         ){
             Toast.makeText(this, "Please enter amount equal to delivery cost", Toast.LENGTH_SHORT).show();
             return false;
         } else if (
-                consignmentStatus.equals("Damaged") &&
+                consignmentStatus.equals(getString(R.string.damaged)) &&
                 (
                    Double.parseDouble(binding.tvDeliveryDeliveryCost.getText().toString()) <
                            Double.parseDouble(binding.edtOrderCollectedAmount.getText().toString())
@@ -160,7 +164,7 @@ public class DeliveryActivity extends AppCompatActivity {
         ) {
             Toast.makeText(this, "Please enter amount less than delivery cost", Toast.LENGTH_SHORT).show();
             return false;
-        } else if (consignmentStatus.equals("Damaged") && damageType == null){
+        } else if (consignmentStatus.equals(getString(R.string.damaged)) && damageType == null){
             Toast.makeText(this, "Please select the damage type", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -175,34 +179,19 @@ public class DeliveryActivity extends AppCompatActivity {
     }
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-
-                // Set up the preview
                 preview = new Preview.Builder().build();
-
-                // Set up the image capture use case
-                imageCapture = new ImageCapture.Builder()
-                        .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation())
-                        .build();
-
-                // Bind the preview and image capture to the lifecycle
+                imageCapture = new ImageCapture.Builder().build();
                 preview.setSurfaceProvider(binding.pvCameraView.getSurfaceProvider());
-
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                         .build();
-
-                // Unbind any previous use cases
                 cameraProvider.unbindAll();
-
-                // Bind use cases to lifecycle
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
-
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                Log.e("Camera_Exception", "startCamera: "+ e.getMessage(),e);
             }
         }, ContextCompat.getMainExecutor(this));
     }
@@ -230,17 +219,15 @@ public class DeliveryActivity extends AppCompatActivity {
                     binding.ivOrderPic.setVisibility(View.VISIBLE);
                 });
             }
-
             @Override
             public void onError(@NonNull ImageCaptureException exception) {
-                exception.printStackTrace();
+                Log.e("ImageCapture_Exception", "onError: "+exception.getMessage(), exception);
             }
         });
     }
     private void displayImage() {
         bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
         binding.ivOrderPic.setImageBitmap(bitmap);
-//        imagePreview.setVisibility(View.VISIBLE);
     }
 
     private File getOutputDirectory() {
@@ -252,14 +239,6 @@ public class DeliveryActivity extends AppCompatActivity {
         return mediaDir;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (cameraExecutor != null && !cameraExecutor.isShutdown()) {
-            cameraExecutor.shutdown();
-        }
-    }
-
     private void getData() {
         orderId = Objects.requireNonNull(getIntent().getExtras()).getString(getString(R.string.orderId));
         orderNo = Objects.requireNonNull(getIntent().getExtras()).getString(getString(R.string.orderNo));
@@ -268,8 +247,6 @@ public class DeliveryActivity extends AppCompatActivity {
         orderLng = Objects.requireNonNull(getIntent().getExtras()).getString(getString(R.string.orderLng));
         orderCustomerName = Objects.requireNonNull(getIntent().getExtras()).getString(getString(R.string.orderCustomerName));
         orderDeliveryCost = Objects.requireNonNull(getIntent().getExtras()).getString(getString(R.string.orderDeliveryCost));
-
-
         binding.tvDeliveryId.setText(orderId);
         binding.tvDeliveryNo.setText(orderNo);
         binding.tvDeliveryCustomerAddress.setText(orderAddress);
