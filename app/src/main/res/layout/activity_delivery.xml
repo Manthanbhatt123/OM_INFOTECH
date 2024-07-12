@@ -264,11 +264,10 @@
 
             <ImageView
                 android:id="@+id/ivOrderPic"
-                android:layout_width="100dp"
+                android:layout_width="350dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="7dp"
                 android:contentDescription="@string/delivery_image"
-                android:rotation="90"
                 android:src="@mipmap/ic_launcher"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/rgDeliveryStatus"

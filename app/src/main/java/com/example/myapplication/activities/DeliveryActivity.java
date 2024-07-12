@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -182,7 +183,7 @@ public class DeliveryActivity extends AppCompatActivity {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 preview = new Preview.Builder().build();
-                imageCapture = new ImageCapture.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
+                imageCapture = new ImageCapture.Builder().setTargetRotation(getWindowManager().getDefaultDisplay().getRotation()).build();
                 preview.setSurfaceProvider(binding.pvCameraView.getSurfaceProvider());
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
@@ -226,6 +227,9 @@ public class DeliveryActivity extends AppCompatActivity {
     }
     private void displayImage() {
         bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         binding.ivOrderPic.setImageBitmap(bitmap);
     }
 
