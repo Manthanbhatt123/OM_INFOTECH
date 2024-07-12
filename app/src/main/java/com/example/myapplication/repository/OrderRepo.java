@@ -2,7 +2,6 @@ package com.example.myapplication.repository;
 
 import android.content.Context;
 
-//import com.example.myapplication.db.AppDataBase;
 import androidx.annotation.NonNull;
 
 import com.example.myapplication.db.AppDataBase;
@@ -11,7 +10,6 @@ import com.example.myapplication.network.NetworkService;
 import com.example.myapplication.utils.RetrofitClient;
 import com.example.myapplication.views.OrderListCallBack;
 
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +35,7 @@ public class OrderRepo {
                 }
 
                 @Override
-                public void onFailure(Call<OrderList> call, Throwable t) {
+                public void onFailure(@NonNull Call<OrderList> call, @NonNull Throwable t) {
                     callBack.onFailure(t.getMessage());
                 }
             });
@@ -46,7 +44,7 @@ public class OrderRepo {
         }
     }
 
-    public void updateOrderList(String damagetype,String collectedCost,String img_url,String consignment_status,String order_status,String order_id){
-        db.orderDao().updateOrder(damagetype,collectedCost,img_url, consignment_status,order_status,order_id);
+    public void updateOrderList(String damageType,String collectedCost,String img_url,String consignment_status,String order_status,String order_id){
+        db.orderDao().updateOrder(damageType,collectedCost,img_url, consignment_status,order_status,order_id);
     }
 }

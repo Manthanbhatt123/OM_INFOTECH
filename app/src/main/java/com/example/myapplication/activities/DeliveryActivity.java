@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
@@ -183,7 +182,7 @@ public class DeliveryActivity extends AppCompatActivity {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 preview = new Preview.Builder().build();
-                imageCapture = new ImageCapture.Builder().build();
+                imageCapture = new ImageCapture.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
                 preview.setSurfaceProvider(binding.pvCameraView.getSurfaceProvider());
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)

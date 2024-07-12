@@ -37,4 +37,5 @@
     <string name="filter_pending">Pending</string>
     <string name="filter_all">Display All</string>
     <string name="pendinglist">PendingList</string>
+    <string name="delivery_image">Delivery Image</string>
 </resources>

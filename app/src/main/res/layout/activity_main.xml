@@ -17,9 +17,9 @@
         android:paddingTop="10dp"
         android:elevation="5dp"
         android:layout_marginHorizontal="4dp"
-        android:layout_marginVertical="5dp"
+        android:layout_marginVertical="9dp"
         android:background="@drawable/order_summary_bg"
-        app:layout_constraintBottom_toTopOf="@id/rvOrderList"
+        app:layout_constraintBottom_toTopOf="@id/tvSortList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -70,7 +70,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/tvSortList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -78,18 +78,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/rvOrderList"
         android:text="@string/sort_list"
-        android:textSize="18sp"
+        android:background="@drawable/sort_filter_button"
+        android:textSize="15sp"
         android:textColor="@color/black" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/tvFilterList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/clOrderSummary"
+        app:layout_constraintTop_toTopOf="@id/tvSortList"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/rvOrderList"
+        app:layout_constraintBottom_toBottomOf="@id/tvSortList"
         android:text="@string/filter_list"
-        android:textSize="18sp"
+        android:background="@drawable/sort_filter_button"
+        android:textSize="15sp"
         android:textColor="@color/black" />
 
     <androidx.recyclerview.widget.RecyclerView

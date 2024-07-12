@@ -1,13 +1,9 @@
 package com.example.myapplication.adapter;
 
-import static androidx.core.content.ContextCompat.getColor;
-import static java.security.AccessController.getContext;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.text.method.CharacterPickerDialog;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -34,6 +30,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         inflater = LayoutInflater.from(context);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setOrders(List<OrderData> orders) {
         this.orders = orders;
         notifyDataSetChanged();
@@ -52,13 +49,13 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
 
     @NonNull
     @Override
-    public OrderListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemrowOrderDataListBinding binding = ItemrowOrderDataListBinding.inflate(inflater, parent, false);
         return new ViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull OrderListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (orders != null) {
             final OrderData orderData = orders.get(position);
             holder.binding.tvOrderCustomerName.setText(orderData.getCustomer_name());

@@ -1,5 +1,6 @@
 package com.example.myapplication.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -7,15 +8,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.Manifest;
 import android.view.WindowManager;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -36,7 +34,6 @@ import com.example.myapplication.views.OrderListCallBack;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements OrderListCallBack, OrderItemClickListner {
 
@@ -121,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void sortListDialog() {
         sortListDialogBinding = SortListDialogBinding.inflate(getLayoutInflater());
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -234,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 dialog.setTitle("Location Error");
                 dialog.setMessage("Location is too far (" + distance + " meters)");
-                dialog.setPositiveButton("OK", (dialog1, which) -> {dialog1.dismiss();});
+                dialog.setPositiveButton("OK", (dialog1, which) -> dialog1.dismiss());
                 dialog.show();
 
                 Toast.makeText(this, "Location is too far (" + distance + " meters)", Toast.LENGTH_SHORT).show();
