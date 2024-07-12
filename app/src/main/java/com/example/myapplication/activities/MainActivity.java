@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
+import com.example.myapplication.databinding.FilterOrderListBinding;
 import com.example.myapplication.databinding.SortListDialogBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -32,17 +33,19 @@ import com.example.myapplication.viewmodel.OrderViewModelFactory;
 import com.example.myapplication.views.OrderItemClickListner;
 import com.example.myapplication.views.OrderListCallBack;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements OrderListCallBack, OrderItemClickListner {
 
     ActivityMainBinding binding;
     SortListDialogBinding sortListDialogBinding;
+    FilterOrderListBinding filterOrderListBinding;
     private OrderListViewModel orderListViewModel;
     private OrderListAdapter orderListAdapter;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private static final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
 
     private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
@@ -82,6 +85,40 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
     }
 
     private void filterListDialog() {
+        filterOrderListBinding = FilterOrderListBinding.inflate(getLayoutInflater());
+        AlertDialog filterDialog = new AlertDialog.Builder(this).create();
+        filterDialog.setTitle("Filter List By:");
+        filterDialog.setView(filterOrderListBinding.getRoot());
+
+        filterOrderListBinding.rgFilterList.setOnCheckedChangeListener((radioGroup, i) -> {
+         if (i == R.id.rbDelivered){
+             filterListItem(getString(R.string.delivered));
+         } else if (i == R.id.rbPending){
+            filterListItem(getString(R.string.pending));
+         } else if (i == R.id.rbAll){
+             orderListAdapter.setOrders(orderDataList);
+         }
+         filterDialog.dismiss();
+        });
+        filterDialog.show();
+    }
+
+    private void filterListItem(String status) {
+        List<OrderData> orders = new ArrayList<>();
+//        orders.clear();
+        for (OrderData orderData:orderDataList) {
+            if (orderData.getOrder_status() != null && status.equals(getString(R.string.delivered))) {
+                if(orderData.getOrder_status().equals(status)){
+                    orders.add(orderData);
+                    orderListAdapter.setOrders(orders);
+                }
+            } else {
+                if (orderData.getOrder_status().isEmpty()){
+                    orders.add(orderData);
+                    orderListAdapter.setOrders(orders);
+                }
+            }
+        }
     }
 
     private void sortListDialog() {

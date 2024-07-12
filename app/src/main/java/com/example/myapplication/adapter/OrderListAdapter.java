@@ -22,7 +22,7 @@ import java.util.List;
 
 public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.ViewHolder> {
 
-    private final List<OrderData> orders;
+    private List<OrderData> orders;
     private final LayoutInflater inflater;
     private final OrderItemClickListner orderItemClickListner;
     private final Context contextAdapter;
@@ -33,6 +33,13 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
         this.orderItemClickListner = orderItemClickListner;
         inflater = LayoutInflater.from(context);
     }
+
+    public void setOrders(List<OrderData> orders) {
+        this.orders = orders;
+        notifyDataSetChanged();
+    }
+
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         private final ItemrowOrderDataListBinding binding;
 
@@ -63,10 +70,12 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                     v ->orderItemClickListner.onOrderItemClick(orderData)
             );
 
-            if(orderData.getOrder_status() != null) {
+            if(!orderData.getOrder_status().isEmpty()) {
                 if (orderData.getOrder_status().equals("Delivered")) {
                     holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.green));
                 }
+            } else {
+                holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.white));
             }
         }
     }

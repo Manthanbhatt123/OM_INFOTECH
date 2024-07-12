@@ -1,10 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">OmInfo-Manthan</string>
+    <string name="_1">1</string>
+    <string name="name">Name</string>
     <string name="order_id">order id:</string>
+    <string name="order_no">order no:</string>
     <string name="order_customer_address">Customer Address:</string>
+    <string name="order_delivery_cost">delivery cost:</string>
+    <string name="order_collected_amount">Collected Amount:</string>
+    <string name="deliver_item">Deliver Item</string>
+    <string name="orderId">orderId</string>
+    <string name="orderNo">orderNo</string>
+    <string name="orderAddress">orderAddress</string>
+    <string name="orderLat">orderLat</string>
+    <string name="orderLng">orderLng</string>
+    <string name="orderCustomerName">orderCustomerName</string>
+    <string name="orderDeliveryCost">orderDeliveryCost</string>
+    <string name="submit">Submit Delivery</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="retake">retake</string>
+    <string name="_100">100</string>
+    <string name="damaged">Damaged</string>
     <string name="good">Good</string>
+    <string name="_0_00">0.00</string>
+    <string name="delivery_count_4_6">Delivery Count: 4/6</string>
+    <string name="cash_collected_100">Cash Collected: 100</string>
+    <string name="total_cash_collected">"Total Cash Collected: "</string>
+    <string name="delivery_count">"Delivery Count: "</string>
     <string name="back">Back</string>
+    <string name="delivered">Delivered</string>
+    <string name="order_summary">Order Summary</string>
     <string name="sort_list">Sort List</string>
     <string name="price">Price</string>
     <string name="filter_list">Filter</string>
+    <string name="filter_delivered">Delivered</string>
+    <string name="filter_pending">Non-Delivered</string>
+    <string name="filter_all">Display All</string>
 </resources>

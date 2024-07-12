@@ -3,6 +3,8 @@ package com.example.myapplication.repository;
 import android.content.Context;
 
 //import com.example.myapplication.db.AppDataBase;
+import androidx.annotation.NonNull;
+
 import com.example.myapplication.db.AppDataBase;
 import com.example.myapplication.model.OrderList;
 import com.example.myapplication.network.NetworkService;
@@ -27,7 +29,7 @@ public class OrderRepo {
         if (db.orderDao().getAllOrders().isEmpty()) {
             networkService.getOrderData().enqueue(new Callback<OrderList>() {
                 @Override
-                public void onResponse(Call<OrderList> call, Response<OrderList> response) {
+                public void onResponse(@NonNull Call<OrderList> call, @NonNull Response<OrderList> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         db.orderDao().insertOrders(response.body().getOrderList());
                         callBack.onSuccess(response.body().getOrderList());
