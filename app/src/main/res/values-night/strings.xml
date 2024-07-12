@@ -4,4 +4,7 @@
     <string name="order_customer_address">Customer Address:</string>
     <string name="good">Good</string>
     <string name="back">Back</string>
+    <string name="sort_list">Sort List</string>
+    <string name="price">Price</string>
+    <string name="filter_list">Filter</string>
 </resources>

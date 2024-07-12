@@ -7,16 +7,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.Manifest;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.R;
+import com.example.myapplication.databinding.SortListDialogBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.example.myapplication.adapter.OrderListAdapter;
@@ -28,16 +32,17 @@ import com.example.myapplication.viewmodel.OrderViewModelFactory;
 import com.example.myapplication.views.OrderItemClickListner;
 import com.example.myapplication.views.OrderListCallBack;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OrderListCallBack, OrderItemClickListner {
 
     ActivityMainBinding binding;
+    SortListDialogBinding sortListDialogBinding;
     private OrderListViewModel orderListViewModel;
     private OrderListAdapter orderListAdapter;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
 
     private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
@@ -58,6 +63,47 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
     private void initUI() {
         getCurrentLocation();
         setupViewModel();
+        onButtonCLick();
+
+    }
+    private void onButtonCLick() {
+        binding.tvSortList.setOnClickListener(v -> {
+            if (orderDataList != null) {
+                sortListDialog();
+            }
+        });
+        
+        binding.tvFilterList.setOnClickListener(v -> {
+         if (orderDataList != null){
+             filterListDialog();
+         }
+        });
+        
+    }
+
+    private void filterListDialog() {
+    }
+
+    private void sortListDialog() {
+        sortListDialogBinding = SortListDialogBinding.inflate(getLayoutInflater());
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Sort List By:")
+                .setView(sortListDialogBinding.getRoot())
+                .create();
+        sortListDialogBinding.rgSortList.setOnCheckedChangeListener((radioGroup, i) -> {
+          if (i == R.id.rbName){
+              orderDataList.sort(Comparator.comparing(OrderData::getCustomer_name));
+              orderListAdapter.notifyDataSetChanged();
+          } else if (i == R.id.rbPrice){
+              orderDataList.sort(Comparator.comparing(OrderData::getDelivery_cost));
+              orderListAdapter.notifyDataSetChanged();
+          } else if (i == R.id.rbOrderId){
+              orderDataList.sort(Comparator.comparing(OrderData::getOrder_id));
+              orderListAdapter.notifyDataSetChanged();
+          }
+          dialog.dismiss();
+        });
+        dialog.show();
     }
 
 
@@ -83,15 +129,12 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
         orderListAdapter = new OrderListAdapter(this, orderDataList,this);
         binding.rvOrderList.setLayoutManager(new LinearLayoutManager(this));
         binding.rvOrderList.setAdapter(orderListAdapter);
-
-        orderDataList.sort(Comparator.comparing(OrderData::getCustomer_name));
     }
 
     private void setupViewModel() {
         OrderRepo repository = new OrderRepo(this);
         OrderViewModelFactory factory = new OrderViewModelFactory(repository);
         orderListViewModel = new ViewModelProvider(this, factory).get(OrderListViewModel.class);
-        orderListViewModel.fetchOrderList(this);
     }
 
     @Override
@@ -174,5 +217,25 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
     protected void onResume() {
         super.onResume();
         orderListViewModel.fetchOrderList(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
+        } else {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            currentLocation = location;
+                            Log.e("CurrentLocation", "getCurrentLocation: "+currentLocation );
+                        }
+                    });
+        }
     }
 }

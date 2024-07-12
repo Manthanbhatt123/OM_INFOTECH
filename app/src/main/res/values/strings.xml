@@ -28,4 +28,8 @@
     <string name="delivery_count">"Delivery Count: "</string>
     <string name="back">Back</string>
     <string name="delivered">Delivered</string>
+    <string name="order_summary">Order Summary</string>
+    <string name="sort_list">Sort List</string>
+    <string name="price">Price</string>
+    <string name="filter_list">Filter</string>
 </resources>
