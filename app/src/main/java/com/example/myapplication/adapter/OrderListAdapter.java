@@ -2,6 +2,7 @@ package com.example.myapplication.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -66,13 +67,16 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
             holder.binding.btnDeliverItem.setOnClickListener(
                     v ->orderItemClickListner.onOrderItemClick(orderData)
             );
-
-            if(!orderData.getOrder_status().isEmpty()) {
-                if (orderData.getOrder_status().equals("Delivered")) {
-                    holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.green));
+            try {
+                if( orderData.getOrder_status() != null || !orderData.getOrder_status().isEmpty()) {
+                    if (orderData.getOrder_status().equals("Delivered")) {
+                        holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.green));
+                    }
+                } else {
+                    holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.white));
                 }
-            } else {
-                holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.white));
+            } catch (Exception e) {
+                Log.e("OrderAdapter ", "onBindViewHolder: \n"+e.getMessage()+"\n",e );
             }
         }
     }
