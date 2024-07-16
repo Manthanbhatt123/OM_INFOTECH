@@ -1,5 +1,8 @@
 package com.example.myapplication.activities;
 
+import static android.widget.Toast.LENGTH_SHORT;
+import static android.widget.Toast.makeText;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -101,20 +104,28 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
     }
 
     private void filterListItem(String status) {
-        List<OrderData> orders = new ArrayList<>();
-//        orders.clear();
-        for (OrderData orderData:orderDataList) {
-            if (orderData.getOrder_status() != null && status.equals(getString(R.string.delivered))) {
-                if(orderData.getOrder_status().equals(status)){
-                    orders.add(orderData);
-                    orderListAdapter.setOrders(orders);
-                }
-            } else {
-                if (orderData.getOrder_status().isEmpty()){
-                    orders.add(orderData);
-                    orderListAdapter.setOrders(orders);
+        try {
+            List<OrderData> orders = new ArrayList<>();
+            boolean hasDelivered = false;
+            for (OrderData orderData : orderDataList) {
+                if (orderData.getOrder_status() != null && status.equals(getString(R.string.delivered)) && orderData.getOrder_status().equals(status)) {
+                        orders.add(orderData);
+                        hasDelivered = true;
+                } else {
+                    if (orderData.getOrder_status() != null && status.equals(getString(R.string.pending)) && orderData.getOrder_status().equals(status)) {
+                        orders.add(orderData);
+                        orderListAdapter.setOrders(orders);
+                    }
                 }
             }
+            if (status.equals(getString(R.string.delivered)) && hasDelivered){
+                orderListAdapter.setOrders(orders);
+            } else {
+                Toast.makeText(this, "No orders delivered", LENGTH_SHORT).show();
+
+            }
+        }catch (Exception e){
+            Log.e("filterListItem_Exception ", "filterListItem: \n"+e.getMessage()+"\n",e );
         }
     }
 
@@ -187,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
                         deliveryCount++;
                     }
                 }
-                if (orderDataList.get(i).getCollected_cost() != null) {
+                if (!orderDataList.get(i).getCollected_cost().isEmpty()) {
                     totalCash += Double.parseDouble(orderDataList.get(i).getCollected_cost());
                 }
             }
@@ -227,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
                 Intent intent = new Intent(this, DeliveryActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
-               Toast.makeText(this, "Location is within 50 meters", Toast.LENGTH_SHORT).show();
+               makeText(this, "Location is within 50 meters", LENGTH_SHORT).show();
             } else {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                 dialog.setTitle("Location Error");
@@ -235,10 +246,10 @@ public class MainActivity extends AppCompatActivity implements OrderListCallBack
                 dialog.setPositiveButton("OK", (dialog1, which) -> dialog1.dismiss());
                 dialog.show();
 
-                Toast.makeText(this, "Location is too far (" + distance + " meters)", Toast.LENGTH_SHORT).show();
+                makeText(this, "Location is too far (" + distance + " meters)", LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, "Current location is not available", Toast.LENGTH_SHORT).show();
+            makeText(this, "Current location is not available", LENGTH_SHORT).show();
         }
 
         Log.e("OrderSpecific", "onOrderItemClick: "+

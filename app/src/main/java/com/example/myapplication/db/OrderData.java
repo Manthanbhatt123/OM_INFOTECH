@@ -21,6 +21,22 @@ public class OrderData {
     private String damage_type;
     private String order_status;
 
+    public OrderData() {
+        this.order_id = "";
+        this.order_no = "";
+        this.customer_name = "";
+        this.latitude = "";
+        this.longitude = "";
+        this.address = "";
+        this.delivery_cost = "";
+        this.collected_cost = "0.00";
+        this.image_url = "-";
+        this.consignment_status = "-";
+        this.damage_type = "None";
+        this.order_status = "Pending";
+    }
+
+
     // Getters and Setters
 
     public int getId() {

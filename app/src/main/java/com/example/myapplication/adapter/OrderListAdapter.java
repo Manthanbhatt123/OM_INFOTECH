@@ -68,9 +68,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.View
                     v ->orderItemClickListner.onOrderItemClick(orderData)
             );
             try {
-                if( orderData.getOrder_status() != null || !orderData.getOrder_status().isEmpty()) {
+                if(orderData.getOrder_status() == null || !orderData.getOrder_status().isEmpty()) {
                     if (orderData.getOrder_status().equals("Delivered")) {
                         holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.green));
+                    }else {
+                        holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.white));
                     }
                 } else {
                     holder.binding.cvOrderDetails.setCardBackgroundColor(ContextCompat.getColor(contextAdapter, R.color.white));
